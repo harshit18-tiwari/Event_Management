@@ -1,0 +1,58 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #0f172a;
+  background-color: #f8fafc;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Sora", ui-sans-serif, system-ui;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at top left, rgba(31, 98, 173, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.10), transparent 24%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(29, 78, 216, 0.18);
+}
+
+@layer components {
+  .page-shell {
+    @apply min-h-screen px-4 py-6 sm:px-6 lg:px-8;
+  }
+
+  .page-card {
+    @apply rounded-[2rem] border border-white/60 bg-white/90 shadow-[0_20px_80px_rgba(15,23,42,0.12)] backdrop-blur;
+  }
+
+  .input-base {
+    @apply w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100;
+  }
+
+  .label-base {
+    @apply mb-2 block text-sm font-semibold text-slate-700;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-2xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition hover:-translate-y-0.5 hover:bg-brand-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-70;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50;
+  }
+}
