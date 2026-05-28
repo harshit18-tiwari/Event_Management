@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import eventService from "../services/eventService";
 import registrationService from "../services/registrationService";
 import authService from "../services/authService";
+import attendanceService from "../services/attendanceService";
 
 const roleChipStyles = {
   Student: "bg-emerald-100 text-emerald-700",
@@ -28,41 +29,53 @@ const Dashboard = () => {
           const registrations = response.data.registrations || [];
           const now = new Date();
           const upcoming = registrations.filter((registration) => new Date(registration.event?.date) >= now).length;
+          const attendanceResponse = await attendanceService.getMyAttendance();
+          const totalPresent = attendanceResponse.data.totalPresent || 0;
+          const attendanceRate = registrations.length === 0 ? 0 : Number(((totalPresent / registrations.length) * 100).toFixed(2));
 
           setStats([
             ["Total Registered Events", registrations.length],
+            ["Events Attended", totalPresent],
+            ["Attendance Rate", `${attendanceRate}%`],
             ["Upcoming Events", upcoming],
-            ["Past Events", Math.max(registrations.length - upcoming, 0)],
           ]);
         } else if (user.role === "Coordinator") {
           const response = await eventService.getAllEvents();
           const ownEvents = (response.data.events || []).filter((event) => event.createdBy?._id === user._id);
 
           const participantResponses = await Promise.all(
-            ownEvents.map((event) => registrationService.getEventParticipants(event._id).catch(() => null))
+            ownEvents.map((event) => attendanceService.getAttendanceReport(event._id).catch(() => null))
           );
 
           const totalParticipants = participantResponses.reduce((sum, responseItem) => {
             if (!responseItem) return sum;
-            return sum + (responseItem.data.stats?.totalRegistrations || 0);
+            return sum + (responseItem.data.totalRegistered || 0);
           }, 0);
+
+          const totalPresent = participantResponses.reduce((sum, responseItem) => {
+            if (!responseItem) return sum;
+            return sum + (responseItem.data.totalPresent || 0);
+          }, 0);
+
+          const attendanceRate = totalParticipants === 0 ? 0 : Number(((totalPresent / totalParticipants) * 100).toFixed(2));
 
           setStats([
             ["Total Events Created", ownEvents.length],
             ["Total Participants", totalParticipants],
-            ["Managed Categories", new Set(ownEvents.map((event) => event.category)).size],
+            ["Attendance Rate", `${attendanceRate}%`],
           ]);
         } else {
           const [eventsResponse, usersResponse, registrationsResponse] = await Promise.all([
             eventService.getAllEvents(),
             authService.getAuthStats(),
-            registrationService.getRegistrationStats(),
+            attendanceService.getAllAttendance(),
           ]);
 
           setStats([
             ["Total Events", (eventsResponse.data.events || []).length],
             ["Total Users", usersResponse.data.totalUsers || 0],
-            ["Total Registrations", registrationsResponse.data.totalRegistrations || 0],
+            ["Total Attendance", registrationsResponse.data.totalPresent || 0],
+            ["Attendance Rate", `${registrationsResponse.data.attendanceRate || 0}%`],
           ]);
         }
       } catch (error) {
@@ -99,6 +112,16 @@ const Dashboard = () => {
                 {(user?.role === "Admin" || user?.role === "Coordinator") && (
                   <Link to="/events/create" className="btn-primary bg-emerald-500 hover:bg-emerald-600">
                     Create Event
+                  </Link>
+                )}
+                {user?.role === "Student" && (
+                  <Link to="/attendance/qr" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                    My QR Code
+                  </Link>
+                )}
+                {(user?.role === "Admin" || user?.role === "Coordinator") && (
+                  <Link to="/attendance/scanner" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                    Attendance Scanner
                   </Link>
                 )}
                 <button
@@ -180,6 +203,20 @@ const Dashboard = () => {
                   <div className="mt-2 text-sm text-slate-600">View your registrations and cancel before start time.</div>
                 </Link>
               )}
+              {user?.role === "Student" && (
+                <Link to="/attendance/history" className="group rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-lg">
+                  <div className="text-sm font-semibold text-slate-500">Attendance</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900 group-hover:text-slate-700">History</div>
+                  <div className="mt-2 text-sm text-slate-600">Review attended events and check-in history.</div>
+                </Link>
+              )}
+              {user?.role === "Student" && (
+                <Link to="/attendance/qr" className="group rounded-3xl border border-cyan-200 bg-cyan-50 p-5 transition hover:-translate-y-0.5 hover:bg-cyan-100 hover:shadow-lg">
+                  <div className="text-sm font-semibold text-cyan-700">Attendance</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900 group-hover:text-cyan-700">My QR Code</div>
+                  <div className="mt-2 text-sm text-slate-600">Open your registration QR codes for event check-in.</div>
+                </Link>
+              )}
               {(user?.role === "Admin" || user?.role === "Coordinator") && (
                 <Link to="/events/create" className="group rounded-3xl border border-emerald-200 bg-emerald-50 p-5 transition hover:-translate-y-0.5 hover:bg-emerald-100 hover:shadow-lg">
                   <div className="text-sm font-semibold text-emerald-700">Manage</div>
@@ -188,10 +225,17 @@ const Dashboard = () => {
                 </Link>
               )}
               {(user?.role === "Admin" || user?.role === "Coordinator") && (
-                <Link to="/events" className="group rounded-3xl border border-sky-200 bg-sky-50 p-5 transition hover:-translate-y-0.5 hover:bg-sky-100 hover:shadow-lg">
-                  <div className="text-sm font-semibold text-sky-700">Participants</div>
-                  <div className="mt-2 text-lg font-semibold text-slate-900 group-hover:text-sky-700">Manage Registrations</div>
-                  <div className="mt-2 text-sm text-slate-600">Open an event to review participants and registrations.</div>
+                <Link to="/attendance/scanner" className="group rounded-3xl border border-sky-200 bg-sky-50 p-5 transition hover:-translate-y-0.5 hover:bg-sky-100 hover:shadow-lg">
+                  <div className="text-sm font-semibold text-sky-700">Attendance</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900 group-hover:text-sky-700">Scanner</div>
+                  <div className="mt-2 text-sm text-slate-600">Open the camera scanner to mark attendance.</div>
+                </Link>
+              )}
+              {user?.role === "Admin" && (
+                <Link to="/attendance/report" className="group rounded-3xl border border-rose-200 bg-rose-50 p-5 transition hover:-translate-y-0.5 hover:bg-rose-100 hover:shadow-lg">
+                  <div className="text-sm font-semibold text-rose-700">Attendance</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900 group-hover:text-rose-700">Reports</div>
+                  <div className="mt-2 text-sm text-slate-600">View attendance statistics and check-in records.</div>
                 </Link>
               )}
             </div>

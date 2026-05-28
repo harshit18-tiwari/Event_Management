@@ -63,6 +63,9 @@ const EventParticipants = () => {
             <Link to="/events" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
               Back to Events
             </Link>
+            <Link to={`/attendance/report/${id}`} className="btn-secondary border-white/10 bg-transparent text-white hover:bg-white/10">
+              View Attendance Report
+            </Link>
           </div>
         </section>
 

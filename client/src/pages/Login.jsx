@@ -29,7 +29,13 @@ const Login = () => {
       const redirectPath = location.state?.from?.pathname || "/dashboard";
       navigate(redirectPath, { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      const message = err.response?.data?.message;
+      setError(
+        message ||
+          (err.code === "ERR_NETWORK" || !err.response
+            ? "Unable to reach the server. Make sure the backend is running on http://localhost:5000."
+            : "Login failed. Please try again.")
+      );
     } finally {
       setIsSubmitting(false);
     }

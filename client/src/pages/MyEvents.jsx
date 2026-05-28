@@ -77,9 +77,15 @@ const MyEvents = () => {
             </div>
             <p className="mt-3 text-sm text-slate-600">{new Date(event.date).toLocaleDateString()} • {event.venue}</p>
             <p className="mt-1 text-sm text-slate-500">Organizer: {event.organizer}</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Attendance: {event.attendanceStatus ? 'Present' : 'Not marked yet'}
+            </p>
             <div className="mt-5 flex flex-wrap gap-2">
               <Link to={`/events/${event._id}`} className="btn-primary px-4 py-2 text-xs">
                 View Details
+              </Link>
+              <Link to={`/attendance/qr/${event._id}`} className="rounded-2xl bg-cyan-50 px-4 py-2 text-xs font-semibold text-cyan-700 transition hover:bg-cyan-100">
+                View QR Code
               </Link>
               <button
                 type="button"
@@ -105,6 +111,14 @@ const MyEvents = () => {
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
             Track your upcoming events, review your past registrations, and cancel before an event starts.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link to="/attendance/qr" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+              My QR Code
+            </Link>
+            <Link to="/attendance/history" className="btn-secondary border-white/10 bg-transparent text-white hover:bg-white/10">
+              Attendance History
+            </Link>
+          </div>
         </section>
 
         <section className="grid gap-4 md:grid-cols-3">

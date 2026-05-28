@@ -1,11 +1,26 @@
 const Event = require('../models/event.model');
 const Registration = require('../models/registration.model');
+const jwt = require('jsonwebtoken');
 
 const parseEventStart = (event) => {
   const [hours = '00', minutes = '00'] = String(event.startTime || '00:00').split(':');
   const start = new Date(event.date);
   start.setHours(Number(hours), Number(minutes), 0, 0);
   return start;
+};
+
+const buildQrToken = (registration) => {
+  return jwt.sign(
+    {
+      studentId: registration.student.toString(),
+      eventId: registration.event.toString(),
+      registrationId: registration._id.toString(),
+    },
+    process.env.QR_TOKEN_SECRET || process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.QR_TOKEN_EXPIRES_IN || '365d',
+    }
+  );
 };
 
 const getApprovedCount = async (eventId) => {
@@ -43,6 +58,9 @@ const registerForEvent = async (req, res) => {
       event: eventId,
       status,
     });
+
+    registration.qrToken = buildQrToken(registration);
+    await registration.save();
 
     const populated = await Registration.findById(registration._id)
       .populate('student', 'name email department year role')
@@ -206,4 +224,5 @@ module.exports = {
   getAllRegistrations,
   removeParticipantRegistration,
   getRegistrationStats,
+  buildQrToken,
 };

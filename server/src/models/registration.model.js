@@ -21,6 +21,18 @@ const registrationSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    qrToken: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    attendanceStatus: {
+      type: Boolean,
+      default: false,
+    },
+    attendanceMarkedAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );

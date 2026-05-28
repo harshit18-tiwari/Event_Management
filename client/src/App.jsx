@@ -10,6 +10,10 @@ import CreateEvent from "./pages/CreateEvent";
 import EditEvent from "./pages/EditEvent";
 import MyEvents from "./pages/MyEvents";
 import EventParticipants from "./pages/EventParticipants";
+import MyQRCode from "./pages/MyQRCode";
+import AttendanceScanner from "./pages/AttendanceScanner";
+import AttendanceReport from "./pages/AttendanceReport";
+import AttendanceHistory from "./pages/AttendanceHistory";
 
 const App = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -63,6 +67,60 @@ const App = () => {
         element={
           <ProtectedRoute allowedRoles={["Student"]}>
             <MyEvents />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/attendance/qr"
+        element={
+          <ProtectedRoute allowedRoles={["Student"]}>
+            <MyQRCode />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/attendance/qr/:eventId"
+        element={
+          <ProtectedRoute allowedRoles={["Student"]}>
+            <MyQRCode />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/attendance/history"
+        element={
+          <ProtectedRoute allowedRoles={["Student"]}>
+            <AttendanceHistory />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/attendance/scanner"
+        element={
+          <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
+            <AttendanceScanner />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/attendance/report"
+        element={
+          <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
+            <AttendanceReport />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/attendance/report/:eventId"
+        element={
+          <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
+            <AttendanceReport />
           </ProtectedRoute>
         }
       />
