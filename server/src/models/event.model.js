@@ -15,6 +15,21 @@ const eventSchema = new mongoose.Schema(
     endTime: { type: String, required: true },
     organizer: { type: String, required: true, trim: true },
     poster: { type: String, default: '' },
+    registrationType: {
+      type: String,
+      enum: ['Individual', 'Team'],
+      default: 'Individual',
+    },
+    minTeamSize: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+    maxTeamSize: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
     maxParticipants: { type: Number, required: true },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   },

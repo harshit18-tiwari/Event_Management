@@ -11,6 +11,7 @@ It includes:
 - Certificate generation and distribution
 - Team management with invitations and leader transfer
 - In-app notifications, announcements, and realtime updates
+- Team-based event registration and event team listings
 
 ## Project Structure
 
@@ -29,10 +30,16 @@ It includes:
 - `client/src/pages/MyTeams.jsx`
 - `client/src/pages/TeamDetails.jsx`
 - `client/src/pages/Invitations.jsx`
+- `client/src/pages/RegisterTeamEvent.jsx`
+- `client/src/pages/MyTeamRegistrations.jsx`
+- `client/src/pages/EventTeams.jsx`
 - `client/src/components/TeamCard.jsx`
 - `client/src/components/TeamMemberList.jsx`
 - `client/src/components/InvitationCard.jsx`
+- `client/src/components/TeamSelector.jsx`
+- `client/src/components/TeamRegistrationCard.jsx`
 - `client/src/services/teamService.js`
+- `client/src/services/teamRegistrationService.js`
 
 ## Requirements
 
@@ -129,6 +136,9 @@ Open the frontend at `http://localhost:5173`.
 - `/teams/create`
 - `/teams/:id`
 - `/invitations`
+- `/team-events/:eventId/register`
+- `/team-registrations`
+- `/events/:eventId/teams`
 
 ## API Highlights
 
@@ -154,6 +164,10 @@ Open the frontend at `http://localhost:5173`.
 - `GET /api/invitations/my`
 - `PATCH /api/invitations/:id/accept`
 - `PATCH /api/invitations/:id/reject`
+- `POST /api/team-registrations/register/:eventId`
+- `DELETE /api/team-registrations/cancel/:eventId`
+- `GET /api/team-registrations/my`
+- `GET /api/team-registrations/event/:eventId`
 
 ## Notes
 
@@ -165,3 +179,5 @@ Open the frontend at `http://localhost:5173`.
 - One certificate per student per event is enforced at the database level.
 - Team invitations are stored as `Pending`, `Accepted`, or `Rejected` records.
 - Team leaders and admins can manage teams and transfer leadership.
+- Team-based events use `registrationType = Team` and enforce event-level team size and capacity validation.
+- Only team leaders can register a team for a team-based event.

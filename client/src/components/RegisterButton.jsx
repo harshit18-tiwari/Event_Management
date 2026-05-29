@@ -1,9 +1,42 @@
+import { Link } from 'react-router-dom';
+
 const RegisterButton = ({ event, onRegister, onCancel, isSubmitting = false }) => {
   const now = new Date();
   const eventStart = new Date(`${new Date(event.date).toISOString().slice(0, 10)}T${event.startTime || '00:00'}:00`);
   const isRegistrationClosed = !event.isRegistrationOpen || now >= eventStart;
   const hasRegistration = Boolean(event.myRegistration);
   const status = event.myRegistration?.status;
+
+  if (event.registrationType === 'Team') {
+    if (hasRegistration) {
+      return (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+            Team Registered
+          </span>
+          <Link
+            to={`/team-registrations`}
+            className="rounded-2xl bg-brand-50 px-4 py-2 text-xs font-semibold text-brand-700 transition hover:bg-brand-100"
+          >
+            View Registrations
+          </Link>
+        </div>
+      );
+    }
+
+    if (isRegistrationClosed) {
+      return <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">Registration Closed</span>;
+    }
+
+    return (
+      <Link
+        to={`/team-events/${event._id}/register`}
+        className="rounded-2xl bg-brand-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-brand-700"
+      >
+        Register Team
+      </Link>
+    );
+  }
 
   if (hasRegistration) {
     const label = status === 'Waitlisted' ? 'Waitlisted' : 'Already Registered';

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import eventService from '../services/eventService';
 import { useAuth as useAuthContext } from '../context/AuthContext';
+import RegisterButton from '../components/RegisterButton';
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -49,6 +50,11 @@ const EventDetails = () => {
                     Generate Certificates
                   </Link>
                 )}
+                {event.registrationType === 'Team' && (user?.role === 'Admin' || user?.role === 'Coordinator') && (
+                  <Link to={`/events/${id}/teams`} className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                    View Teams
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -86,6 +92,22 @@ const EventDetails = () => {
                 <div className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Poster</div>
                 <div className="mt-1 text-sm font-medium text-slate-900">{event.poster || 'Not provided'}</div>
               </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Registration Type</div>
+                <div className="mt-1 text-lg font-semibold text-slate-900">{event.registrationType || 'Individual'}</div>
+              </div>
+              {event.registrationType === 'Team' && (
+                <>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Min Team Size</div>
+                    <div className="mt-1 text-lg font-semibold text-slate-900">{event.minTeamSize}</div>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Max Team Size</div>
+                    <div className="mt-1 text-lg font-semibold text-slate-900">{event.maxTeamSize}</div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -104,6 +126,12 @@ const EventDetails = () => {
               <div className="mt-3 text-2xl font-semibold">{event.startTime} - {event.endTime}</div>
               <div className="mt-2 text-sm text-slate-300">Plan your attendance around this time slot.</div>
             </div>
+
+            {user?.role === 'Student' && (
+              <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <RegisterButton event={event} />
+              </div>
+            )}
           </div>
         </section>
       </div>

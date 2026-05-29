@@ -155,6 +155,9 @@ const Dashboard = () => {
                     <Link to="/teams" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
                       My Teams
                     </Link>
+                    <Link to="/team-registrations" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                      Team Registrations
+                    </Link>
                     <Link to="/invitations" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
                       Invitations
                     </Link>

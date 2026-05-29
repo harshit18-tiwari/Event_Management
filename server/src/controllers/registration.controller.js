@@ -41,6 +41,10 @@ const registerForEvent = async (req, res) => {
       return res.status(404).json({ message: 'Event not found.' });
     }
 
+    if (event.registrationType === 'Team') {
+      return res.status(400).json({ message: 'This event requires team registration.' });
+    }
+
     const registrationStart = parseEventStart(event);
     if (new Date() >= registrationStart) {
       return res.status(400).json({ message: 'Registration is closed because the event has started.' });

@@ -1,5 +1,6 @@
 const Event = require('../models/event.model');
 const Registration = require('../models/registration.model');
+const TeamRegistration = require('../models/teamRegistration.model');
 const User = require('../models/user.model');
 const { createNotifications } = require('../services/notification.service');
 
@@ -7,24 +8,52 @@ const validateEventInput = (body) => {
   const required = ['title','description','category','venue','date','startTime','endTime','organizer','maxParticipants'];
   const missing = required.filter((k) => !body[k]);
   if (missing.length) return `Missing fields: ${missing.join(', ')}`;
+
+  const registrationType = body.registrationType || 'Individual';
+  if (registrationType === 'Team') {
+    const minTeamSize = Number(body.minTeamSize);
+    const maxTeamSize = Number(body.maxTeamSize);
+
+    if (!Number.isInteger(minTeamSize) || minTeamSize < 1) {
+      return 'Minimum team size is required for team events.';
+    }
+
+    if (!Number.isInteger(maxTeamSize) || maxTeamSize < minTeamSize) {
+      return 'Maximum team size must be greater than or equal to the minimum team size.';
+    }
+
+    if (Number(body.maxParticipants) < maxTeamSize) {
+      return 'Max participants must be greater than or equal to the maximum team size.';
+    }
+  }
+
   return null;
 };
 
 const getEventStats = async (eventIds, userId = null) => {
   const registrations = await Registration.find({ event: { $in: eventIds } }).select('event student status');
+  const teamRegistrations = await TeamRegistration.find({ event: { $in: eventIds } })
+    .populate({ path: 'team', select: 'leader members maxMembers' })
+    .select('event team registeredBy status');
 
   return eventIds.reduce((accumulator, eventId) => {
+    const teamEventRegistrations = teamRegistrations.filter((registration) => String(registration.event) === String(eventId));
     const eventRegistrations = registrations.filter((registration) => registration.event.toString() === eventId.toString());
     const approvedCount = eventRegistrations.filter((registration) => registration.status === 'Approved').length;
     const waitlistedCount = eventRegistrations.filter((registration) => registration.status === 'Waitlisted').length;
+    const teamSeatsUsed = teamEventRegistrations.reduce((sum, registration) => sum + (registration.team?.members?.length || 0), 0);
+    const teamCount = teamEventRegistrations.length;
     const myRegistration = userId
-      ? eventRegistrations.find((registration) => registration.student.toString() === userId.toString()) || null
+      ? eventRegistrations.find((registration) => registration.student.toString() === userId.toString()) ||
+        teamEventRegistrations.find((registration) => String(registration.registeredBy) === String(userId)) ||
+        null
       : null;
 
     accumulator[eventId.toString()] = {
-      registeredCount: approvedCount,
+      registeredCount: teamEventRegistrations.length > 0 ? teamSeatsUsed : approvedCount,
       waitlistedCount,
       availableSeats: 0,
+      registeredTeams: teamCount,
       myRegistration,
     };
 
@@ -40,6 +69,7 @@ const enrichEventsWithStats = async (events, userId = null) => {
       registeredCount: 0,
       waitlistedCount: 0,
       availableSeats: event.maxParticipants,
+      registeredTeams: 0,
       myRegistration: null,
     };
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const categories = ['Technical', 'Cultural', 'Sports', 'Workshop', 'Seminar'];
+const registrationTypes = ['Individual', 'Team'];
 
 const EventForm = ({ initial = {}, onSubmit, submitting }) => {
   const [form, setForm] = useState({
@@ -14,6 +15,9 @@ const EventForm = ({ initial = {}, onSubmit, submitting }) => {
     organizer: initial.organizer || '',
     maxParticipants: initial.maxParticipants || '',
     poster: initial.poster || '',
+    registrationType: initial.registrationType || 'Individual',
+    minTeamSize: initial.minTeamSize || '',
+    maxTeamSize: initial.maxTeamSize || '',
   });
 
   const handleChange = (e) => {
@@ -23,7 +27,19 @@ const EventForm = ({ initial = {}, onSubmit, submitting }) => {
 
   const submit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+    const payload = { ...form };
+
+    if (payload.registrationType !== 'Team') {
+      delete payload.minTeamSize;
+      delete payload.maxTeamSize;
+    } else {
+      payload.minTeamSize = Number(payload.minTeamSize);
+      payload.maxTeamSize = Number(payload.maxTeamSize);
+    }
+
+    payload.maxParticipants = Number(payload.maxParticipants);
+
+    onSubmit(payload);
   };
 
   return (
@@ -96,6 +112,30 @@ const EventForm = ({ initial = {}, onSubmit, submitting }) => {
             placeholder="300"
           />
         </div>
+
+        <div>
+          <label className="label-base">Registration Type</label>
+          <select name="registrationType" value={form.registrationType} onChange={handleChange} className="input-base">
+            {registrationTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {form.registrationType === 'Team' && (
+          <>
+            <div>
+              <label className="label-base">Minimum Team Size</label>
+              <input name="minTeamSize" type="number" min="1" value={form.minTeamSize} onChange={handleChange} className="input-base" placeholder="2" />
+            </div>
+            <div>
+              <label className="label-base">Maximum Team Size</label>
+              <input name="maxTeamSize" type="number" min="1" value={form.maxTeamSize} onChange={handleChange} className="input-base" placeholder="5" />
+            </div>
+          </>
+        )}
 
         <div className="md:col-span-2">
           <label className="label-base">Poster URL <span className="font-normal text-slate-400">(optional)</span></label>

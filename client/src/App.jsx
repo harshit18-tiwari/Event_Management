@@ -25,6 +25,9 @@ import CreateTeam from "./pages/CreateTeam";
 import MyTeams from "./pages/MyTeams";
 import TeamDetails from "./pages/TeamDetails";
 import Invitations from "./pages/Invitations";
+import RegisterTeamEvent from "./pages/RegisterTeamEvent";
+import MyTeamRegistrations from "./pages/MyTeamRegistrations";
+import EventTeams from "./pages/EventTeams";
 
 const App = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -225,6 +228,33 @@ const App = () => {
         element={
           <ProtectedRoute>
             <TeamDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/team-events/:eventId/register"
+        element={
+          <ProtectedRoute allowedRoles={["Student"]}>
+            <RegisterTeamEvent />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/team-registrations"
+        element={
+          <ProtectedRoute allowedRoles={["Student"]}>
+            <MyTeamRegistrations />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/events/:eventId/teams"
+        element={
+          <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
+            <EventTeams />
           </ProtectedRoute>
         }
       />
