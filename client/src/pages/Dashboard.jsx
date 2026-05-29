@@ -5,6 +5,7 @@ import eventService from "../services/eventService";
 import registrationService from "../services/registrationService";
 import authService from "../services/authService";
 import attendanceService from "../services/attendanceService";
+import certificateService from "../services/certificateService";
 
 const roleChipStyles = {
   Student: "bg-emerald-100 text-emerald-700",
@@ -30,6 +31,7 @@ const Dashboard = () => {
           const now = new Date();
           const upcoming = registrations.filter((registration) => new Date(registration.event?.date) >= now).length;
           const attendanceResponse = await attendanceService.getMyAttendance();
+          const certificateResponse = await certificateService.getMyCertificates();
           const totalPresent = attendanceResponse.data.totalPresent || 0;
           const attendanceRate = registrations.length === 0 ? 0 : Number(((totalPresent / registrations.length) * 100).toFixed(2));
 
@@ -38,6 +40,7 @@ const Dashboard = () => {
             ["Events Attended", totalPresent],
             ["Attendance Rate", `${attendanceRate}%`],
             ["Upcoming Events", upcoming],
+            ["Certificates Earned", certificateResponse.data.totalCertificates || 0],
           ]);
         } else if (user.role === "Coordinator") {
           const response = await eventService.getAllEvents();
@@ -45,6 +48,9 @@ const Dashboard = () => {
 
           const participantResponses = await Promise.all(
             ownEvents.map((event) => attendanceService.getAttendanceReport(event._id).catch(() => null))
+          );
+          const certificateResponses = await Promise.all(
+            ownEvents.map((event) => certificateService.getEventCertificates(event._id).catch(() => null))
           );
 
           const totalParticipants = participantResponses.reduce((sum, responseItem) => {
@@ -58,17 +64,23 @@ const Dashboard = () => {
           }, 0);
 
           const attendanceRate = totalParticipants === 0 ? 0 : Number(((totalPresent / totalParticipants) * 100).toFixed(2));
+          const certificatesIssued = certificateResponses.reduce((sum, responseItem) => {
+            if (!responseItem) return sum;
+            return sum + (responseItem.data.totalCertificates || 0);
+          }, 0);
 
           setStats([
             ["Total Events Created", ownEvents.length],
             ["Total Participants", totalParticipants],
             ["Attendance Rate", `${attendanceRate}%`],
+            ["Certificates Issued", certificatesIssued],
           ]);
         } else {
-          const [eventsResponse, usersResponse, registrationsResponse] = await Promise.all([
+          const [eventsResponse, usersResponse, registrationsResponse, certificatesResponse] = await Promise.all([
             eventService.getAllEvents(),
             authService.getAuthStats(),
             attendanceService.getAllAttendance(),
+            certificateService.getAllCertificates(),
           ]);
 
           setStats([
@@ -76,6 +88,7 @@ const Dashboard = () => {
             ["Total Users", usersResponse.data.totalUsers || 0],
             ["Total Attendance", registrationsResponse.data.totalPresent || 0],
             ["Attendance Rate", `${registrationsResponse.data.attendanceRate || 0}%`],
+            ["Total Certificates", certificatesResponse.data.totalCertificates || 0],
           ]);
         }
       } catch (error) {
@@ -119,9 +132,19 @@ const Dashboard = () => {
                     My QR Code
                   </Link>
                 )}
+                {user?.role === "Student" && (
+                  <Link to="/certificates" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                    My Certificates
+                  </Link>
+                )}
                 {(user?.role === "Admin" || user?.role === "Coordinator") && (
                   <Link to="/attendance/scanner" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
                     Attendance Scanner
+                  </Link>
+                )}
+                {(user?.role === "Admin" || user?.role === "Coordinator") && (
+                  <Link to="/certificates/generate" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                    Generate Certificates
                   </Link>
                 )}
                 <button
@@ -211,6 +234,13 @@ const Dashboard = () => {
                 </Link>
               )}
               {user?.role === "Student" && (
+                <Link to="/certificates" className="group rounded-3xl border border-amber-200 bg-amber-50 p-5 transition hover:-translate-y-0.5 hover:bg-amber-100 hover:shadow-lg">
+                  <div className="text-sm font-semibold text-amber-700">Certificates</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900 group-hover:text-amber-700">My Certificates</div>
+                  <div className="mt-2 text-sm text-slate-600">View earned certificates and download PDF copies.</div>
+                </Link>
+              )}
+              {user?.role === "Student" && (
                 <Link to="/attendance/qr" className="group rounded-3xl border border-cyan-200 bg-cyan-50 p-5 transition hover:-translate-y-0.5 hover:bg-cyan-100 hover:shadow-lg">
                   <div className="text-sm font-semibold text-cyan-700">Attendance</div>
                   <div className="mt-2 text-lg font-semibold text-slate-900 group-hover:text-cyan-700">My QR Code</div>
@@ -229,6 +259,13 @@ const Dashboard = () => {
                   <div className="text-sm font-semibold text-sky-700">Attendance</div>
                   <div className="mt-2 text-lg font-semibold text-slate-900 group-hover:text-sky-700">Scanner</div>
                   <div className="mt-2 text-sm text-slate-600">Open the camera scanner to mark attendance.</div>
+                </Link>
+              )}
+              {(user?.role === "Admin" || user?.role === "Coordinator") && (
+                <Link to="/certificates/generate" className="group rounded-3xl border border-amber-200 bg-amber-50 p-5 transition hover:-translate-y-0.5 hover:bg-amber-100 hover:shadow-lg">
+                  <div className="text-sm font-semibold text-amber-700">Certificates</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900 group-hover:text-amber-700">Generate</div>
+                  <div className="mt-2 text-sm text-slate-600">Issue certificates for event attendees and manage templates.</div>
                 </Link>
               )}
               {user?.role === "Admin" && (

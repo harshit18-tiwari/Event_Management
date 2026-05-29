@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import eventService from '../services/eventService';
+import { useAuth as useAuthContext } from '../context/AuthContext';
 
 const EventDetails = () => {
   const { id } = useParams();
+  const { user } = useAuthContext();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -42,6 +44,11 @@ const EventDetails = () => {
                 <Link to="/events" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
                   Back to events
                 </Link>
+                {(user?.role === 'Admin' || user?.role === 'Coordinator') && (
+                  <Link to={`/certificates/generate/${id}`} className="btn-primary bg-emerald-500 hover:bg-emerald-600">
+                    Generate Certificates
+                  </Link>
+                )}
               </div>
             </div>
 

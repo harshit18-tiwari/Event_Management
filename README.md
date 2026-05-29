@@ -8,6 +8,7 @@ It includes:
 - Event management CRUD
 - Event registration and participant management
 - QR code attendance and check-in
+- Certificate generation and distribution
 
 ## Project Structure
 
@@ -41,6 +42,10 @@ MONGODB_URI=mongodb://127.0.0.1:27017/college-event-management
 JWT_SECRET=your_jwt_secret
 QR_TOKEN_SECRET=your_optional_qr_secret
 CLIENT_URL=http://localhost:5173
+COLLEGE_NAME=College Event Management
+COLLEGE_TAGLINE=Official Recognition and Achievement
+PRINCIPAL_NAME=Principal
+CERTIFICATE_COORDINATOR_NAME=Event Coordinator
 ```
 
 Create a `.env` file inside `client/` with:
@@ -50,6 +55,8 @@ VITE_API_BASE_URL=http://localhost:5000/api
 ```
 
 `QR_TOKEN_SECRET` is optional. If it is not set, the backend falls back to `JWT_SECRET` for QR token signing.
+
+The certificate environment values are optional. If you do not set them, the backend uses built-in defaults.
 
 ### 3. Start the backend
 
@@ -75,6 +82,13 @@ Open the frontend at `http://localhost:5173`.
 - Coordinators and admins can view attendance reports for events.
 - Admins can view the global attendance report.
 
+## Certificate Flow
+
+- Coordinators and admins can generate certificates only for attendees with marked attendance.
+- Students can view, preview, verify, and download their earned certificates.
+- Every certificate includes a human-readable certificate ID and a QR code that links to public verification.
+- Duplicate certificate generation is prevented unless you explicitly re-generate for the same event.
+
 ## Useful Routes
 
 - `/login`
@@ -86,6 +100,12 @@ Open the frontend at `http://localhost:5173`.
 - `/attendance/history`
 - `/attendance/scanner`
 - `/attendance/report`
+- `/certificates`
+- `/certificates/:certificateId`
+- `/certificates/generate`
+- `/certificates/generate/:eventId`
+- `/verify-certificate`
+- `/verify-certificate/:certificateId`
 
 ## API Highlights
 
@@ -94,6 +114,12 @@ Open the frontend at `http://localhost:5173`.
 - `GET /api/attendance/event/:eventId`
 - `GET /api/attendance/my-attendance`
 - `GET /api/attendance/all`
+- `POST /api/certificates/generate/:eventId`
+- `GET /api/certificates/my`
+- `GET /api/certificates/download/:certificateId`
+- `GET /api/certificates/verify/:certificateId`
+- `GET /api/certificates/event/:eventId`
+- `GET /api/certificates`
 
 ## Notes
 
@@ -101,3 +127,5 @@ Open the frontend at `http://localhost:5173`.
 - Attendance can be recorded once per registration.
 - Coordinators can manage attendance only for events they created.
 - Admins can manage attendance for all events.
+- Certificates are issued only to attendees with `attendanceStatus = true`.
+- One certificate per student per event is enforced at the database level.

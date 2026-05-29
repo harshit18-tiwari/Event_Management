@@ -14,6 +14,10 @@ import MyQRCode from "./pages/MyQRCode";
 import AttendanceScanner from "./pages/AttendanceScanner";
 import AttendanceReport from "./pages/AttendanceReport";
 import AttendanceHistory from "./pages/AttendanceHistory";
+import MyCertificates from "./pages/MyCertificates";
+import GenerateCertificates from "./pages/GenerateCertificates";
+import CertificateDetails from "./pages/CertificateDetails";
+import VerifyCertificate from "./pages/VerifyCertificate";
 
 const App = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -121,6 +125,45 @@ const App = () => {
         element={
           <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
             <AttendanceReport />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route path="/verify-certificate" element={<VerifyCertificate />} />
+      <Route path="/verify-certificate/:certificateId" element={<VerifyCertificate />} />
+
+      <Route
+        path="/certificates"
+        element={
+          <ProtectedRoute allowedRoles={["Student"]}>
+            <MyCertificates />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/certificates/:certificateId"
+        element={
+          <ProtectedRoute allowedRoles={["Student", "Coordinator", "Admin"]}>
+            <CertificateDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/certificates/generate"
+        element={
+          <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
+            <GenerateCertificates />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/certificates/generate/:eventId"
+        element={
+          <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
+            <GenerateCertificates />
           </ProtectedRoute>
         }
       />
