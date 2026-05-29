@@ -35,6 +35,10 @@ import AssignJudges from "./pages/AssignJudges";
 import ManageCriteria from "./pages/ManageCriteria";
 import EvaluateTeam from "./pages/EvaluateTeam";
 import EvaluateParticipant from "./pages/EvaluateParticipant";
+import Leaderboard from "./pages/Leaderboard";
+import Results from "./pages/Results";
+import PublicLeaderboard from "./pages/PublicLeaderboard";
+import PublicResults from "./pages/PublicResults";
 
 const App = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -302,6 +306,22 @@ const App = () => {
         }
       />
       <Route
+        path="/events/:eventId/leaderboard"
+        element={
+          <ProtectedRoute allowedRoles={["Admin", "Coordinator", "Judge"]}>
+            <Leaderboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/events/:eventId/results"
+        element={
+          <ProtectedRoute allowedRoles={["Admin", "Coordinator", "Judge"]}>
+            <Results />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/events/:eventId/judges"
         element={
           <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
@@ -357,6 +377,8 @@ const App = () => {
           </ProtectedRoute>
         }
       />
+      <Route path="/leaderboard/public/:eventId" element={<PublicLeaderboard />} />
+      <Route path="/results/public/:eventId" element={<PublicResults />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

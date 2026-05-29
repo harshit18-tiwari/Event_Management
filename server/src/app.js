@@ -15,6 +15,8 @@ const teamRegistrationRoutes = require("./routes/teamRegistration.routes");
 const judgeRoutes = require("./routes/judge.routes");
 const criteriaRoutes = require("./routes/criteria.routes");
 const evaluationRoutes = require("./routes/evaluation.routes");
+const leaderboardRoutes = require("./routes/leaderboard.routes");
+const resultRoutes = require("./routes/result.routes");
 
 const app = express();
 
@@ -64,6 +66,8 @@ app.use("/api/team-registrations", teamRegistrationRoutes);
 app.use("/api/judges", judgeRoutes);
 app.use("/api/criteria", criteriaRoutes);
 app.use("/api/evaluations", evaluationRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/results", resultRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

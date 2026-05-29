@@ -20,7 +20,7 @@ const certificateSchema = new mongoose.Schema(
     },
     certificateType: {
       type: String,
-      enum: ['Participation', 'Winner', 'Runner-Up', 'Volunteer'],
+      enum: ['Participation', 'Winner', 'Runner-Up', 'Second Runner-Up', 'Volunteer'],
       default: 'Participation',
     },
     certificateUrl: {
@@ -35,7 +35,7 @@ const certificateSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-certificateSchema.index({ student: 1, event: 1 }, { unique: true });
+certificateSchema.index({ student: 1, event: 1, certificateType: 1 }, { unique: true });
 
 const Certificate = mongoose.model('Certificate', certificateSchema);
 

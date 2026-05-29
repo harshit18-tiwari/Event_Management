@@ -50,6 +50,12 @@ const EventDetails = () => {
                     Generate Certificates
                   </Link>
                 )}
+                <Link to={`/leaderboard/public/${id}`} className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                  Public Leaderboard
+                </Link>
+                <Link to={`/results/public/${id}`} className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                  Public Results
+                </Link>
                 {(user?.role === 'Admin' || user?.role === 'Coordinator') && (
                   <Link to={`/events/${id}/judges`} className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
                     Manage Judges

@@ -10,6 +10,17 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await connectDB();
+
+    try {
+      await Promise.all([
+        require('./src/models/certificate.model').syncIndexes(),
+        require('./src/models/leaderboard.model').syncIndexes(),
+        require('./src/models/result.model').syncIndexes(),
+      ]);
+    } catch (indexError) {
+      console.warn('Index sync skipped or failed:', indexError.message);
+    }
+
     const server = app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

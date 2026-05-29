@@ -17,6 +17,8 @@ const getCertificateHeading = (certificateType = 'Participation') => {
       return 'Certificate of Achievement';
     case 'Runner-Up':
       return 'Certificate of Excellence';
+    case 'Second Runner-Up':
+      return 'Certificate of Merit';
     case 'Volunteer':
       return 'Certificate of Appreciation';
     default:

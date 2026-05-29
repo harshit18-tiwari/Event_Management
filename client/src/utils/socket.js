@@ -18,6 +18,14 @@ export function initSocket(user) {
     window.dispatchEvent(new CustomEvent('notification-received', { detail: payload }));
   });
 
+  socket.on('leaderboard-updated', (payload) => {
+    window.dispatchEvent(new CustomEvent('leaderboard-updated', { detail: payload }));
+  });
+
+  socket.on('results-updated', (payload) => {
+    window.dispatchEvent(new CustomEvent('results-updated', { detail: payload }));
+  });
+
   return socket;
 }
 

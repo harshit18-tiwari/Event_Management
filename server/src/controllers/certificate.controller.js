@@ -51,7 +51,7 @@ const generateCertificates = async (req, res) => {
     const { eventId } = req.params;
     const { certificateType = 'Participation', regenerate = false } = req.body || {};
 
-    if (!['Participation', 'Winner', 'Runner-Up', 'Volunteer'].includes(certificateType)) {
+    if (!['Participation', 'Winner', 'Runner-Up', 'Second Runner-Up', 'Volunteer'].includes(certificateType)) {
       return res.status(400).json({ message: 'Invalid certificate type.' });
     }
 
@@ -83,7 +83,7 @@ const generateCertificates = async (req, res) => {
     const updatedCertificates = [];
 
     for (const registration of registrations) {
-      const existingCertificate = await Certificate.findOne({ student: registration.student._id, event: eventId })
+      const existingCertificate = await Certificate.findOne({ student: registration.student._id, event: eventId, certificateType })
         .populate('student', 'name email department year role')
         .populate({
           path: 'event',
