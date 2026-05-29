@@ -50,6 +50,16 @@ const EventDetails = () => {
                     Generate Certificates
                   </Link>
                 )}
+                {(user?.role === 'Admin' || user?.role === 'Coordinator') && (
+                  <Link to={`/events/${id}/judges`} className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                    Manage Judges
+                  </Link>
+                )}
+                {(user?.role === 'Admin' || user?.role === 'Coordinator') && (
+                  <Link to={`/events/${id}/criteria`} className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                    Manage Criteria
+                  </Link>
+                )}
                 {event.registrationType === 'Team' && (user?.role === 'Admin' || user?.role === 'Coordinator') && (
                   <Link to={`/events/${id}/teams`} className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
                     View Teams

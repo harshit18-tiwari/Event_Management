@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const roles = ["Student", "Coordinator", "Admin"];
+const roles = ["Student", "Coordinator", "Admin", "Judge"];
 
 const Register = () => {
   const { register } = useAuth();
@@ -52,6 +52,7 @@ const Register = () => {
               <li>Student: Join events and track participation.</li>
               <li>Coordinator: Manage events you own.</li>
               <li>Admin: Full visibility across the platform.</li>
+              <li>Judge: Review assigned events and submit scores.</li>
             </ul>
             <div className="mt-10 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">

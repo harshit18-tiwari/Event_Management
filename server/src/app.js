@@ -12,6 +12,9 @@ const announcementRoutes = require("./routes/announcement.routes");
 const teamRoutes = require("./routes/team.routes");
 const invitationRoutes = require("./routes/invitation.routes");
 const teamRegistrationRoutes = require("./routes/teamRegistration.routes");
+const judgeRoutes = require("./routes/judge.routes");
+const criteriaRoutes = require("./routes/criteria.routes");
+const evaluationRoutes = require("./routes/evaluation.routes");
 
 const app = express();
 
@@ -58,6 +61,9 @@ app.use("/api/announcements", announcementRoutes);
 app.use("/api/teams", teamRoutes);
 app.use("/api/invitations", invitationRoutes);
 app.use("/api/team-registrations", teamRegistrationRoutes);
+app.use("/api/judges", judgeRoutes);
+app.use("/api/criteria", criteriaRoutes);
+app.use("/api/evaluations", evaluationRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

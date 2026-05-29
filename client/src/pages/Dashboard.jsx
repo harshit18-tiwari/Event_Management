@@ -8,11 +8,13 @@ import attendanceService from "../services/attendanceService";
 import certificateService from "../services/certificateService";
 import NotificationBell from "../components/NotificationBell";
 import NotificationDropdown from "../components/NotificationDropdown";
+import JudgeDashboard from "./JudgeDashboard";
 
 const roleChipStyles = {
   Student: "bg-emerald-100 text-emerald-700",
   Coordinator: "bg-amber-100 text-amber-700",
   Admin: "bg-rose-100 text-rose-700",
+  Judge: "bg-sky-100 text-sky-700",
 };
 
 const Dashboard = () => {
@@ -25,6 +27,11 @@ const Dashboard = () => {
   useEffect(() => {
     const loadStats = async () => {
       if (!user) return;
+
+      if (user.role === "Judge") {
+        setStatsLoading(false);
+        return;
+      }
 
       setStatsLoading(true);
       try {
@@ -108,6 +115,10 @@ const Dashboard = () => {
     await logout();
     navigate("/login", { replace: true });
   };
+
+  if (user?.role === "Judge") {
+    return <JudgeDashboard />;
+  }
 
   return (
     <div className="page-shell">

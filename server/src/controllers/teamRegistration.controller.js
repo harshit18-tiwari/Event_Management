@@ -1,6 +1,7 @@
 const Event = require('../models/event.model');
 const Team = require('../models/team.model');
 const TeamRegistration = require('../models/teamRegistration.model');
+const JudgeAssignment = require('../models/judgeAssignment.model');
 const { validateTeamRegistrationInput } = require('../utils/teamRegistration.validation');
 
 const parseEventStart = (event) => {
@@ -154,7 +155,9 @@ const getEventTeams = async (req, res) => {
       return res.status(404).json({ message: 'Event not found.' });
     }
 
-    if (!canManageEvent(req, event)) {
+    const isAssignedJudge = req.user.role === 'Judge' && await JudgeAssignment.exists({ event: event._id, judge: req.user._id });
+
+    if (!canManageEvent(req, event) && !isAssignedJudge) {
       return res.status(403).json({ message: 'You are not allowed to view these team registrations.' });
     }
 

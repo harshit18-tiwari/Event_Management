@@ -1,6 +1,7 @@
 const Event = require('../models/event.model');
 const Registration = require('../models/registration.model');
 const User = require('../models/user.model');
+const JudgeAssignment = require('../models/judgeAssignment.model');
 const { createNotifications } = require('../services/notification.service');
 const jwt = require('jsonwebtoken');
 
@@ -152,8 +153,9 @@ const getEventParticipants = async (req, res) => {
 
     const isAdmin = req.user.role === 'Admin';
     const isOwner = req.user.role === 'Coordinator' && event.createdBy.toString() === req.user._id.toString();
+    const isAssignedJudge = req.user.role === 'Judge' && await JudgeAssignment.exists({ event: event._id, judge: req.user._id });
 
-    if (!isAdmin && !isOwner) {
+    if (!isAdmin && !isOwner && !isAssignedJudge) {
       return res.status(403).json({ message: 'You are not allowed to view these participants.' });
     }
 

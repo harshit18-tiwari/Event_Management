@@ -28,6 +28,13 @@ import Invitations from "./pages/Invitations";
 import RegisterTeamEvent from "./pages/RegisterTeamEvent";
 import MyTeamRegistrations from "./pages/MyTeamRegistrations";
 import EventTeams from "./pages/EventTeams";
+import JudgeDashboard from "./pages/JudgeDashboard";
+import MyAssignedEvents from "./pages/MyAssignedEvents";
+import MyEvaluations from "./pages/MyEvaluations";
+import AssignJudges from "./pages/AssignJudges";
+import ManageCriteria from "./pages/ManageCriteria";
+import EvaluateTeam from "./pages/EvaluateTeam";
+import EvaluateParticipant from "./pages/EvaluateParticipant";
 
 const App = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -291,6 +298,62 @@ const App = () => {
         element={
           <ProtectedRoute allowedRoles={["Admin","Coordinator"]}>
             <EditEvent />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/events/:eventId/judges"
+        element={
+          <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
+            <AssignJudges />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/events/:eventId/criteria"
+        element={
+          <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
+            <ManageCriteria />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/judge/dashboard"
+        element={
+          <ProtectedRoute allowedRoles={["Judge"]}>
+            <JudgeDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/judge/my-events"
+        element={
+          <ProtectedRoute allowedRoles={["Judge"]}>
+            <MyAssignedEvents />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/judge/my-evaluations"
+        element={
+          <ProtectedRoute allowedRoles={["Judge"]}>
+            <MyEvaluations />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/judge/events/:eventId/evaluate-team"
+        element={
+          <ProtectedRoute allowedRoles={["Judge"]}>
+            <EvaluateTeam />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/judge/events/:eventId/evaluate-participant"
+        element={
+          <ProtectedRoute allowedRoles={["Judge"]}>
+            <EvaluateParticipant />
           </ProtectedRoute>
         }
       />
