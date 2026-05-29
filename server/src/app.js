@@ -9,6 +9,8 @@ const attendanceRoutes = require("./routes/attendance.routes");
 const certificateRoutes = require("./routes/certificate.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const announcementRoutes = require("./routes/announcement.routes");
+const teamRoutes = require("./routes/team.routes");
+const invitationRoutes = require("./routes/invitation.routes");
 
 const app = express();
 
@@ -52,6 +54,8 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/announcements", announcementRoutes);
+app.use("/api/teams", teamRoutes);
+app.use("/api/invitations", invitationRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

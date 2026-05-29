@@ -9,11 +9,30 @@ It includes:
 - Event registration and participant management
 - QR code attendance and check-in
 - Certificate generation and distribution
+- Team management with invitations and leader transfer
+- In-app notifications, announcements, and realtime updates
 
 ## Project Structure
 
 - `server/` - Express API, MongoDB models, controllers, and routes
 - `client/` - React frontend with routing, pages, and reusable UI components
+
+### Team Module Structure
+
+- `server/src/models/team.model.js`
+- `server/src/models/invitation.model.js`
+- `server/src/controllers/team.controller.js`
+- `server/src/controllers/invitation.controller.js`
+- `server/src/routes/team.routes.js`
+- `server/src/routes/invitation.routes.js`
+- `client/src/pages/CreateTeam.jsx`
+- `client/src/pages/MyTeams.jsx`
+- `client/src/pages/TeamDetails.jsx`
+- `client/src/pages/Invitations.jsx`
+- `client/src/components/TeamCard.jsx`
+- `client/src/components/TeamMemberList.jsx`
+- `client/src/components/InvitationCard.jsx`
+- `client/src/services/teamService.js`
 
 ## Requirements
 
@@ -106,6 +125,10 @@ Open the frontend at `http://localhost:5173`.
 - `/certificates/generate/:eventId`
 - `/verify-certificate`
 - `/verify-certificate/:certificateId`
+- `/teams`
+- `/teams/create`
+- `/teams/:id`
+- `/invitations`
 
 ## API Highlights
 
@@ -120,6 +143,17 @@ Open the frontend at `http://localhost:5173`.
 - `GET /api/certificates/verify/:certificateId`
 - `GET /api/certificates/event/:eventId`
 - `GET /api/certificates`
+- `POST /api/teams`
+- `GET /api/teams/my`
+- `GET /api/teams/:id`
+- `PUT /api/teams/:id`
+- `DELETE /api/teams/:id`
+- `POST /api/teams/:id/invitations`
+- `PUT /api/teams/:id/leader`
+- `GET /api/teams/:teamId/invitations`
+- `GET /api/invitations/my`
+- `PATCH /api/invitations/:id/accept`
+- `PATCH /api/invitations/:id/reject`
 
 ## Notes
 
@@ -129,3 +163,5 @@ Open the frontend at `http://localhost:5173`.
 - Admins can manage attendance for all events.
 - Certificates are issued only to attendees with `attendanceStatus = true`.
 - One certificate per student per event is enforced at the database level.
+- Team invitations are stored as `Pending`, `Accepted`, or `Rejected` records.
+- Team leaders and admins can manage teams and transfer leadership.

@@ -21,6 +21,10 @@ import VerifyCertificate from "./pages/VerifyCertificate";
 import Notifications from "./pages/Notifications";
 import Announcements from "./pages/Announcements";
 import CreateAnnouncement from "./pages/CreateAnnouncement";
+import CreateTeam from "./pages/CreateTeam";
+import MyTeams from "./pages/MyTeams";
+import TeamDetails from "./pages/TeamDetails";
+import Invitations from "./pages/Invitations";
 
 const App = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -194,6 +198,42 @@ const App = () => {
         element={
           <ProtectedRoute allowedRoles={["Coordinator","Admin"]}>
             <CreateAnnouncement />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/teams"
+        element={
+          <ProtectedRoute>
+            <MyTeams />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/teams/create"
+        element={
+          <ProtectedRoute allowedRoles={["Student"]}>
+            <CreateTeam />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/teams/:id"
+        element={
+          <ProtectedRoute>
+            <TeamDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/invitations"
+        element={
+          <ProtectedRoute>
+            <Invitations />
           </ProtectedRoute>
         }
       />

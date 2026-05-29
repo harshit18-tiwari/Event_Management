@@ -150,6 +150,16 @@ const Dashboard = () => {
                     Generate Certificates
                   </Link>
                 )}
+                {user?.role === "Student" && (
+                  <>
+                    <Link to="/teams" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                      My Teams
+                    </Link>
+                    <Link to="/invitations" className="btn-secondary border-white/10 bg-white/10 text-white hover:bg-white/15">
+                      Invitations
+                    </Link>
+                  </>
+                )}
                 <div className="relative inline-flex shrink-0 items-center">
                   <NotificationBell onOpen={() => setShowNotifications((current) => !current)} />
                   {showNotifications && (
