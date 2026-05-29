@@ -18,6 +18,9 @@ import MyCertificates from "./pages/MyCertificates";
 import GenerateCertificates from "./pages/GenerateCertificates";
 import CertificateDetails from "./pages/CertificateDetails";
 import VerifyCertificate from "./pages/VerifyCertificate";
+import Notifications from "./pages/Notifications";
+import Announcements from "./pages/Announcements";
+import CreateAnnouncement from "./pages/CreateAnnouncement";
 
 const App = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -164,6 +167,33 @@ const App = () => {
         element={
           <ProtectedRoute allowedRoles={["Admin", "Coordinator"]}>
             <GenerateCertificates />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <Notifications />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/announcements"
+        element={
+          <ProtectedRoute>
+            <Announcements />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/announcements/create"
+        element={
+          <ProtectedRoute allowedRoles={["Coordinator","Admin"]}>
+            <CreateAnnouncement />
           </ProtectedRoute>
         }
       />

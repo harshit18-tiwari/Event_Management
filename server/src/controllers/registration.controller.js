@@ -1,5 +1,7 @@
 const Event = require('../models/event.model');
 const Registration = require('../models/registration.model');
+const User = require('../models/user.model');
+const { createNotifications } = require('../services/notification.service');
 const jwt = require('jsonwebtoken');
 
 const parseEventStart = (event) => {
@@ -61,6 +63,16 @@ const registerForEvent = async (req, res) => {
 
     registration.qrToken = buildQrToken(registration);
     await registration.save();
+
+    const staffRecipients = await User.find({ role: { $in: ['Admin', 'Coordinator'] } }).select('_id');
+    await createNotifications(
+      staffRecipients.map((user) => user._id),
+      {
+        title: 'New Student Registration',
+        message: `${req.user.name} registered for ${event.title}.`,
+        type: 'registration',
+      }
+    );
 
     const populated = await Registration.findById(registration._id)
       .populate('student', 'name email department year role')

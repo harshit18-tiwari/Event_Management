@@ -1,5 +1,7 @@
 const Event = require('../models/event.model');
 const Registration = require('../models/registration.model');
+const User = require('../models/user.model');
+const { createNotifications } = require('../services/notification.service');
 
 const validateEventInput = (body) => {
   const required = ['title','description','category','venue','date','startTime','endTime','organizer','maxParticipants'];
@@ -62,6 +64,17 @@ const createEvent = async (req, res) => {
 
     const event = await Event.create(payload);
     const populated = await event.populate('createdBy', 'name email role');
+
+    const students = await User.find({ role: 'Student' }).select('_id name email');
+    await createNotifications(
+      students.map((student) => student._id),
+      {
+        title: `New Event: ${event.title}`,
+        message: `A new event "${event.title}" has been created and is now available for registration.`,
+        type: 'announcement',
+      }
+    );
+
     return res.status(201).json({ event: populated });
   } catch (error) {
     return res.status(500).json({ message: 'Create event failed', error: error.message });
@@ -109,6 +122,17 @@ const updateEvent = async (req, res) => {
     await event.save();
     const populated = await Event.findById(event._id).populate('createdBy', 'name email role');
     const enriched = await enrichEventsWithStats([populated], req.user?._id || null);
+
+    const participants = await Registration.find({ event: event._id }).select('student');
+    await createNotifications(
+      participants.map((registration) => registration.student),
+      {
+        title: `Event Updated: ${event.title}`,
+        message: `The event "${event.title}" has updated details. Please review the latest information.`,
+        type: 'announcement',
+      }
+    );
+
     return res.status(200).json({ event: enriched[0] });
   } catch (error) {
     return res.status(500).json({ message: 'Update failed', error: error.message });

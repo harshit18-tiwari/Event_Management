@@ -14,6 +14,21 @@ const startServer = async () => {
       console.log(`Server running on port ${PORT}`);
     });
 
+    // initialize realtime socket and scheduled jobs
+    try {
+      const { initSocket } = require("./src/socket/socket");
+      initSocket(server);
+    } catch (err) {
+      console.warn("Socket initialization failed:", err.message);
+    }
+
+    try {
+      const { startReminders } = require("./src/jobs/reminder.job");
+      startReminders();
+    } catch (err) {
+      console.warn("Reminder job failed to start:", err.message);
+    }
+
     server.on("error", async (error) => {
       if (error.code !== "EADDRINUSE") {
         console.error("Server failed to start:", error.message);

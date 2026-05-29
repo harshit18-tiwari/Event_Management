@@ -6,6 +6,8 @@ import registrationService from "../services/registrationService";
 import authService from "../services/authService";
 import attendanceService from "../services/attendanceService";
 import certificateService from "../services/certificateService";
+import NotificationBell from "../components/NotificationBell";
+import NotificationDropdown from "../components/NotificationDropdown";
 
 const roleChipStyles = {
   Student: "bg-emerald-100 text-emerald-700",
@@ -18,6 +20,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -109,7 +112,7 @@ const Dashboard = () => {
   return (
     <div className="page-shell">
       <div className="mx-auto max-w-6xl space-y-6">
-        <header className="page-card overflow-hidden bg-slate-950 text-white">
+        <header className="page-card overflow-visible bg-slate-950 text-white">
           <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:p-10">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">College Event Management</p>
@@ -147,6 +150,14 @@ const Dashboard = () => {
                     Generate Certificates
                   </Link>
                 )}
+                <div className="relative inline-flex shrink-0 items-center">
+                  <NotificationBell onOpen={() => setShowNotifications((current) => !current)} />
+                  {showNotifications && (
+                    <div className="absolute right-0 top-full z-[999] mt-3">
+                      <NotificationDropdown />
+                    </div>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={handleLogout}
